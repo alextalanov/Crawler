@@ -11,7 +11,7 @@ trait SearchEngine {
 
   type Query = String
 
-  type Content = Iterator[String]
+  type Content = List[String]
 
   type Links = Set[URL]
 
@@ -42,6 +42,6 @@ trait SearchEngine {
     Resource.make(io)(in => IO(in.close()))
   }
 
-  protected def readContent(url: URL): IO[Content] = openConnection(url).use(in => IO(in.getLines()))
+  protected def readContent(url: URL): IO[Content] = openConnection(url).use(in => IO(in.getLines().toList))
 
 }

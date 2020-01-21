@@ -15,5 +15,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
 
   // Specific
-  "org.rogach" %% "scallop" % "3.3.1"
+  "org.rogach" %% "scallop" % "3.3.1",
+  "org.jsoup" % "jsoup" % "1.12.1"
 )

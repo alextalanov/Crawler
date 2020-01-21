@@ -31,8 +31,12 @@ object CrawlerApp extends IOApp {
       case conf.Yandex => new ContentExtractor(conf.query()) with YandexSearch
     }()
 
-    val extractor = contentExtractor.extract {content =>
-      log.info(Thread.currentThread().getName)
+    val extractor = contentExtractor.extract { content =>
+      log.info(
+        "Thread: {}, no error: {}",
+        Thread.currentThread().getName,
+        content.attempt.unsafeRunSync().isRight
+      )
       //TODO ContentProcessor
       //TODO ContentWriter
     }
