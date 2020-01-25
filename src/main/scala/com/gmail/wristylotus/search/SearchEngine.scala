@@ -13,7 +13,7 @@ trait SearchEngine {
 
   type Content = List[String]
 
-  type Links = Set[URL]
+  type Links = List[URL]
 
   type Header = (String, String)
 

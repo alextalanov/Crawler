@@ -21,7 +21,7 @@ trait GoogleSearch extends SearchEngine {
       .flatMap(extractLink)
       .filterNot(_.contains("google"))
       .map(new URL(_))
-      .toSet
+      .toList
   }
 
   private def extractLink(link: String) =

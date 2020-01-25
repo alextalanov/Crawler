@@ -2,9 +2,10 @@ package com.gmail.wristylotus
 
 import java.net.URL
 
-import cats.effect.{ContextShift, IO}
+import cats.Functor
+import cats.effect.{ContextShift, IO, Resource}
 import cats.implicits._
-import com.gmail.wristylotus.search.SearchEngine
+import com.gmail.wristylotus.search.{ContentEntry, SearchEngine}
 
 class ContentExtractor(
                         queries: List[String],
@@ -14,20 +15,27 @@ class ContentExtractor(
                       ) {
   searchEngine: SearchEngine =>
 
-  type Consumer = ((URL, String, IO[Content])) => Unit
+  def extractWith(writer: => ContentWriter): IO[Unit] = queries
+    .map { query => (Functor[IO] compose Functor[List]).map(search(query))((query, _)) }
+    .parSequence
+    .map(_.flatten)
+    .map(links => {
+      val grouped = links.grouped(links.size / concurrency)
+      grouped
+    })
+    .map(_.map(extractContent(_, writer)).toList.parSequence)
+    .flatten
+    .void
 
-  def extract(consumer: Consumer): IO[Unit] =
-    queries.map { query =>
-      search(query)
-        .map(links => links.grouped(concurrency))
-        .map(chunks => chunks.map(extractContent(_, query, consumer)).toList.parSequence)
-        .flatten
+
+  private def extractContent(links: List[(Query, URL)], contentWriter: ContentWriter): IO[Unit] =
+    Resource.fromAutoCloseable(IO(contentWriter)).use { writer =>
+      IO {
+        links.view
+          .map { case (query, link) => ContentEntry(link, query, readContent(link)) }
+          .map(writer(_))
+          .foreach(_.unsafeRunSync())
+      }
     }
-      .sequence_
-
-
-  private def extractContent(links: Links, query: String, consumer: Consumer): IO[Unit] = IO {
-    links.view.map(link => (link, query, readContent(link))).foreach(consumer)
-  }
 
 }

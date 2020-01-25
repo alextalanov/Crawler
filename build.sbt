@@ -16,5 +16,7 @@ libraryDependencies ++= Seq(
 
   // Specific
   "org.rogach" %% "scallop" % "3.3.1",
-  "org.jsoup" % "jsoup" % "1.12.1"
+  "org.jsoup" % "jsoup" % "1.12.1",
+  "org.apache.hadoop" % "hadoop-hdfs" % "2.9.0",
+  "org.apache.hadoop" % "hadoop-common" % "2.9.0"
 )

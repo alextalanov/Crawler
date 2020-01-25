@@ -1,10 +1,10 @@
 package com.gmail.wristylotus
 
+import java.net.URI
 import java.nio.file.{Path, Paths}
 
 import cats.effect.{ExitCode, IO, IOApp, Resource}
-import cats.implicits._
-import com.gmail.wristylotus.search.{ContentEntry, GoogleSearch, YandexSearch}
+import com.gmail.wristylotus.search.{GoogleSearch, YandexSearch}
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 
@@ -16,15 +16,14 @@ object CrawlerApp extends IOApp {
 
   // override implicit def contextShift: ContextShift[IO] = ???
 
-  val writer: ContentWriter = (_: ContentEntry) => IO.unit
-
-
   class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
     val Google = "google"
     val Yandex = "yandex"
 
     val engine = opt[String](short = 'e', default = Some(Google)).map(_.toLowerCase)
     val query = opt[String](short = 'q', required = true)
+    val hdfsAddr = opt[URI](short = 'a', required = true)
+    val filePath = opt[Path](short = 'f', required = true)
     verify()
   }
 
@@ -44,27 +43,12 @@ object CrawlerApp extends IOApp {
       case conf.Yandex => new ContentExtractor(queries) with YandexSearch
     }()
 
-    runExtract(contentExtractor).unsafeRunSync()
+    def writer = CsvFileWriter(conf.hdfsAddr(), conf.filePath())
+
+    contentExtractor.extractWith(writer).unsafeRunSync()
 
     IO(ExitCode.Success)
   }
-
-
-  def runExtract(extractor: ContentExtractor): IO[Unit] =
-    extractor.extract {
-      case (link, query, content) =>
-
-        content.map(ContentEntry(link, query, _)).attempt.unsafeRunSync() match {
-          case Right(entry) =>
-            val w1 = writer(entry)
-            val w2 = writer(entry)
-
-            List(w1, w2).parSequence.unsafeRunSync()
-
-          case Left(ex) => log.warn(ex.getMessage)
-        }
-    }
-
 
   def readFile(path: Path): IO[List[String]] = {
     val io = IO(Source.fromFile(path.toUri))
