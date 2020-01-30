@@ -1,32 +1,27 @@
-package com.gmail.wristylotus
+package com.gmail.wristylotus.writers
 
 import java.net.URI
 import java.nio.file.Path
 import java.util.UUID
 
 import cats.effect.IO
-import com.gmail.wristylotus.search.ContentEntry
+import com.gmail.wristylotus.model.Content
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path => HPath}
-import org.slf4j.LoggerFactory
 
 class CsvFileWriter(
                      hdfs: FileSystem,
                      val filePath: String,
-                     val fileSuffix: String = UUID.randomUUID().toString
+                     val fileSuffix: String = s"_${UUID.randomUUID().toString}"
                    ) extends ContentWriter {
-
-  private val log = LoggerFactory.getLogger(classOf[CsvFileWriter])
 
   private val writer = hdfs.create(new HPath(filePath).suffix(fileSuffix))
 
-  override def write(entry: ContentEntry): IO[Unit] = IO {
-    val ContentEntry(link, query, content) = entry
+  override def write(content: Content): IO[Unit] = IO {
+    val Content(link, query, body) = content
+    val row = s"""$query,$link,${body.mkString}""".getBytes
 
-    content.attempt.unsafeRunSync() match {
-      case Right(data) => writer.write(s"""$query,$link,${data.mkString}""".getBytes)
-      case Left(ex) => log.warn(ex.getMessage)
-    }
+    writer.write(row)
   }
 
   override def close(): Unit = writer.close()

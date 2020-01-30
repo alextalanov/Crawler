@@ -5,7 +5,9 @@ import java.net.URL
 import cats.Functor
 import cats.effect.{ContextShift, IO, Resource}
 import cats.implicits._
-import com.gmail.wristylotus.search.{ContentEntry, SearchEngine}
+import com.gmail.wristylotus.model.ExtractUnit
+import com.gmail.wristylotus.search.SearchEngine
+import com.gmail.wristylotus.writers.ContentWriter
 
 class ContentExtractor(
                         queries: List[String],
@@ -19,11 +21,8 @@ class ContentExtractor(
     .map { query => (Functor[IO] compose Functor[List]).map(search(query))((query, _)) }
     .parSequence
     .map(_.flatten)
-    .map(links => {
-      val grouped = links.grouped(links.size / concurrency)
-      grouped
-    })
-    .map(_.map(extractContent(_, writer)).toList.parSequence)
+    .map(links => links.grouped(links.size / concurrency).toList)
+    .map(_.map(extractContent(_, writer)).parSequence)
     .flatten
     .void
 
@@ -32,7 +31,7 @@ class ContentExtractor(
     Resource.fromAutoCloseable(IO(contentWriter)).use { writer =>
       IO {
         links.view
-          .map { case (query, link) => ContentEntry(link, query, readContent(link)) }
+          .map { case (query, link) => ExtractUnit(link, query, readContent(link)) }
           .map(writer(_))
           .foreach(_.unsafeRunSync())
       }

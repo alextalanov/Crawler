@@ -5,6 +5,7 @@ import java.nio.file.{Path, Paths}
 
 import cats.effect.{ExitCode, IO, IOApp, Resource}
 import com.gmail.wristylotus.search.{GoogleSearch, YandexSearch}
+import com.gmail.wristylotus.writers.{CsvFileWriter, ParquetFileWriter}
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 
@@ -20,14 +21,18 @@ object CrawlerApp extends IOApp {
     val Google = "google"
     val Yandex = "yandex"
 
+    val Csv = "csv"
+    val Parquet = "parquet"
+
     val engine = opt[String](short = 'e', default = Some(Google)).map(_.toLowerCase)
+    val format = opt[String](short = 'm', default = Some(Csv).map(_.toLowerCase))
     val query = opt[String](short = 'q', required = true)
     val hdfsAddr = opt[URI](short = 'a', required = true)
     val filePath = opt[Path](short = 'f', required = true)
     verify()
   }
 
-
+  //sbt runMain com.gmail.wristylotus.CrawlerApp -q queries.txt -a "hdfs://namenode:9000" -f com/gmail/wristylotus/crawler/data.(csv, parquet)
   override def run(args: List[String]): IO[ExitCode] = {
     val conf = new Conf(args)
 
@@ -43,7 +48,10 @@ object CrawlerApp extends IOApp {
       case conf.Yandex => new ContentExtractor(queries) with YandexSearch
     }()
 
-    def writer = CsvFileWriter(conf.hdfsAddr(), conf.filePath())
+    def writer = conf.format.map {
+      case conf.Csv => CsvFileWriter(conf.hdfsAddr(), conf.filePath())
+      case conf.Parquet => ParquetFileWriter(conf.hdfsAddr(), conf.filePath())
+    }()
 
     contentExtractor.extractWith(writer).unsafeRunSync()
 

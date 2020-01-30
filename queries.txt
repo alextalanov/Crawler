@@ -1,3 +1,10 @@
 apple
 samsung
 sony
+iphone
+airpods
+iwatch
+ps4
+ps3
+ps2
+ps one

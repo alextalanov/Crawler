@@ -1,0 +1,10 @@
+{
+    "type": "record",
+    "namespace": "com.gmail.wristylotus.model",
+    "name": "AvroContent",
+    "fields": [
+      { "name": "link", "type": "string" },
+      { "name": "query", "type": "string" },
+      { "name": "body", "type": "string" }
+    ]
+}
