@@ -18,14 +18,18 @@ object CrawlerApp extends IOApp {
   // override implicit def contextShift: ContextShift[IO] = ???
 
   class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
-    val Google = "google"
-    val Yandex = "yandex"
+    object Engine {
+      val Google = "google"
+      val Yandex = "yandex"
+    }
 
-    val Csv = "csv"
-    val Parquet = "parquet"
+    object ExtractFormat {
+      val Csv = "csv"
+      val Parquet = "parquet"
+    }
 
-    val engine = opt[String](short = 'e', default = Some(Google)).map(_.toLowerCase)
-    val format = opt[String](short = 'm', default = Some(Csv).map(_.toLowerCase))
+    val engine = opt[String](short = 'e', default = Some(Engine.Google)).map(_.toLowerCase)
+    val format = opt[String](short = 'm', default = Some(ExtractFormat.Csv).map(_.toLowerCase))
     val query = opt[String](short = 'q', required = true)
     val hdfsAddr = opt[URI](short = 'a', required = true)
     val filePath = opt[Path](short = 'f', required = true)
@@ -44,13 +48,13 @@ object CrawlerApp extends IOApp {
     val queries = queryIO.unsafeRunSync()
 
     val contentExtractor = conf.engine.map {
-      case conf.Google => new ContentExtractor(queries) with GoogleSearch
-      case conf.Yandex => new ContentExtractor(queries) with YandexSearch
+      case conf.Engine.Google => new ContentExtractor(queries) with GoogleSearch
+      case conf.Engine.Yandex => new ContentExtractor(queries) with YandexSearch
     }()
 
     def writer = conf.format.map {
-      case conf.Csv => CsvFileWriter(conf.hdfsAddr(), conf.filePath())
-      case conf.Parquet => ParquetFileWriter(conf.hdfsAddr(), conf.filePath())
+      case conf.ExtractFormat.Csv => CsvFileWriter(conf.hdfsAddr(), conf.filePath())
+      case conf.ExtractFormat.Parquet => ParquetFileWriter(conf.hdfsAddr(), conf.filePath())
     }()
 
     contentExtractor.extractWith(writer).unsafeRunSync()

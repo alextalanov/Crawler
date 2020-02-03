@@ -18,16 +18,23 @@ class ContentExtractor(
   searchEngine: SearchEngine =>
 
   def extractWith(writer: => ContentWriter): IO[Unit] = queries
-    .map { query => (Functor[IO] compose Functor[List]).map(search(query))((query, _)) }
+    .map(query => searchWith(query))
     .parSequence
     .map(_.flatten)
-    .map(links => links.grouped(links.size / concurrency).toList)
-    .map(_.map(extractContent(_, writer)).parSequence)
-    .flatten
+    .map(splitToPartitions)
+    .flatMap(divideBtwWorkers(_, writer).parSequence)
     .void
 
+  private def searchWith(query: Query) =
+    (Functor[IO] compose Functor[List]).map(search(query))((query, _))
 
-  private def extractContent(links: List[(Query, URL)], contentWriter: ContentWriter): IO[Unit] =
+  protected def splitToPartitions(links: List[(Query, URL)]) =
+    links.grouped(links.size / concurrency).toList
+
+  protected def divideBtwWorkers(partitions: List[List[(Query, URL)]], writer: => ContentWriter) =
+    partitions.map(extractContent(_, writer))
+
+  protected def extractContent(links: List[(Query, URL)], contentWriter: ContentWriter): IO[Unit] =
     Resource.fromAutoCloseable(IO(contentWriter)).use { writer =>
       IO {
         links.view
