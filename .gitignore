@@ -1,3 +1,9 @@
-/target/
-/project/
-/.idea/
+/projects/Crawler/target/
+/projects/Crawler/project/
+/projects/Crawler/.idea/
+/projects/SparkApp/target/
+/projects/SparkApp/project/
+/projects/SparkApp/.idea/
+/hadoop-logs/
+/hadoop-config/*
+!/hadoop-config/hadoop-config.json

@@ -1,0 +1,98 @@
+version: "3.7"
+services:
+
+
+  namenode:
+    container_name: namenode
+    image: "docker.io/dockeralexandrtalan/hadoop"
+    entrypoint: /bin/bash entrypoint.sh --command "hdfs start namenode" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    volumes:
+      - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
+      - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
+    ports:
+      - "9870:9870"
+    networks:
+      - hadoop
+  datanode:
+    image: "docker.io/dockeralexandrtalan/hadoop"
+    entrypoint: /bin/bash entrypoint.sh --command "hdfs start datanode" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    volumes:
+      - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
+      - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
+    ports:
+      - "50075:50075"
+    networks:
+      - hadoop
+    depends_on:
+      - namenode
+
+
+  resourcemanager:
+    container_name: resourcemanager
+    image: "docker.io/dockeralexandrtalan/hadoop"
+    entrypoint: /bin/bash entrypoint.sh --command "yarn start resourcemanager" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    volumes:
+      - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
+      - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
+    ports:
+      - "12050:12050"
+    networks:
+      - hadoop
+  nodemanager1:
+    container_name: nodemanager1
+    image: "docker.io/dockeralexandrtalan/hadoop"
+    entrypoint: /bin/bash entrypoint.sh --command "yarn start nodemanager" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    volumes:
+      - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
+      - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
+    ports:
+      - "8042:8042"
+    networks:
+      - hadoop
+    depends_on:
+      - resourcemanager
+  nodemanager2:
+    container_name: nodemanager2
+    image: "docker.io/dockeralexandrtalan/hadoop"
+    entrypoint: /bin/bash entrypoint.sh --command "yarn start nodemanager" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    volumes:
+      - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
+      - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
+    ports:
+      - "8043:8042"
+    networks:
+      - hadoop
+    depends_on:
+      - resourcemanager
+
+
+  crawler:
+    container_name: crawler
+    image: docker.io/dockeralexandrtalan/sbt
+    volumes:
+      - ./projects/Crawler:/root/crawler
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+
+
+# $SPARK_HOME/bin/spark-submit --class com.gmail.wristylotus.MainApp --master yarn --deploy-mode client --driver-memory 4g --executor-memory 2g --executor-cores 1 --num-executors=3 --conf spark.yarn.am.memory=512m --conf spark.scheduler.mode=FAIR --queue spark_app $SPARK_DRIVER_JAR_PATH
+  spark_driver:
+    container_name: spark_driver
+    image: docker.io/dockeralexandrtalan/spark
+    volumes:
+      - ./projects/SparkApp:/root/spark/app
+      - ./hadoop-config:/root/spark/hadoop/config
+    ports:
+      - "4040:4040"
+    environment:
+      - HADOOP_CONF_DIR=/root/spark/hadoop/config
+      - SPARK_DRIVER_JAR_PATH=/root/spark/app/target/scala-2.12/SparkApp-assembly-0.1.jar
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop
+
+networks:
+  hadoop:
