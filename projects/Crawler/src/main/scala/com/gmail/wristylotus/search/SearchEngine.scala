@@ -9,19 +9,11 @@ import scala.io.{BufferedSource, Source}
 
 trait SearchEngine {
 
-  type Query = String
-
-  type Content = List[String]
-
-  type Links = List[URL]
-
-  type Header = (String, String)
-
   val url: String
 
   def search(query: Query): IO[Links] = readContent(buildUrl(query)).map(parse)
 
-  protected def parse(content: Content): Links
+  protected def parse(content: Html): Links
 
   protected def buildUrl(query: Query): URL = new URL(url + encode(query))
 
@@ -42,6 +34,6 @@ trait SearchEngine {
     Resource.make(io)(in => IO(in.close()))
   }
 
-  protected def readContent(url: URL): IO[Content] = openConnection(url).use(in => IO(in.getLines().toList))
+  protected def readContent(url: URL): IO[Html] = openConnection(url).use(in => IO(in.getLines().toList))
 
 }

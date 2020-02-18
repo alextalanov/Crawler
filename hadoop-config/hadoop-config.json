@@ -20,6 +20,7 @@
 
 		"nodemanager.resource.cpu-vcores": 4,
 		"yarn.nodemanager.resource.memory-mb": 5000,
-		"yarn.nodemanager.vmem-pmem-ratio": 3.0
+		"yarn.nodemanager.vmem-pmem-ratio": 3.0,
+		"yarn.nodemanager.disk-health-checker.max-disk-utilization-per-disk-percentage": 99
 	}
 }

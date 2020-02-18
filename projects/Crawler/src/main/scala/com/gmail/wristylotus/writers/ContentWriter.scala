@@ -1,7 +1,7 @@
 package com.gmail.wristylotus.writers
 
 import cats.effect.IO
-import com.gmail.wristylotus.model.{Content, ExtractUnit}
+import com.gmail.wristylotus.search.{Content, ExtractUnit}
 import org.slf4j.LoggerFactory
 
 trait ContentWriter extends AutoCloseable {

@@ -5,7 +5,7 @@ import java.nio.file.Path
 import java.util.UUID
 
 import cats.effect.IO
-import com.gmail.wristylotus.model.Content
+import com.gmail.wristylotus.search.Content
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path => HPath}
 

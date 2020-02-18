@@ -1,16 +1,13 @@
 package com.gmail.wristylotus
 
-import java.net.URL
-
 import cats.Functor
 import cats.effect.{ContextShift, IO, Resource}
 import cats.implicits._
-import com.gmail.wristylotus.model.ExtractUnit
-import com.gmail.wristylotus.search.SearchEngine
+import com.gmail.wristylotus.search.{ExtractUnit, Link, Query, SearchEngine}
 import com.gmail.wristylotus.writers.ContentWriter
 
 class ContentExtractor(
-                        queries: List[String],
+                        queries: List[Query],
                         concurrency: Int = Runtime.getRuntime.availableProcessors()
                       )(
                         implicit contextShift: ContextShift[IO]
@@ -28,13 +25,13 @@ class ContentExtractor(
   private def searchWith(query: Query) =
     (Functor[IO] compose Functor[List]).map(search(query))((query, _))
 
-  protected def splitToPartitions(links: List[(Query, URL)]) =
+  protected def splitToPartitions(links: List[(Query, Link)]) =
     links.grouped(links.size / concurrency).toList
 
-  protected def divideBtwWorkers(partitions: List[List[(Query, URL)]], writer: => ContentWriter) =
+  protected def divideBtwWorkers(partitions: List[List[(Query, Link)]], writer: => ContentWriter) =
     partitions.map(extractContent(_, writer))
 
-  protected def extractContent(links: List[(Query, URL)], contentWriter: ContentWriter): IO[Unit] =
+  protected def extractContent(links: List[(Query, Link)], contentWriter: ContentWriter): IO[Unit] =
     Resource.fromAutoCloseable(IO(contentWriter)).use { writer =>
       IO {
         links.view

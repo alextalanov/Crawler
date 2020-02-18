@@ -76,16 +76,19 @@ services:
     networks:
       - hadoop
 
-
-# $SPARK_HOME/bin/spark-submit --class com.gmail.wristylotus.MainApp --master yarn --deploy-mode client --driver-memory 4g --executor-memory 2g --executor-cores 1 --num-executors=3 --conf spark.yarn.am.memory=512m --conf spark.scheduler.mode=FAIR --queue spark_app $SPARK_DRIVER_JAR_PATH
+# Create /spark-logs dir in HDFS
+# $SPARK_HOME/sbin/start-history-server.sh
+# $SPARK_HOME/bin/spark-submit --class com.gmail.wristylotus.MainApp --master yarn --deploy-mode client --driver-memory 4g --executor-memory 2g --executor-cores 1 --num-executors=2 --conf spark.yarn.am.memory=512m --conf spark.scheduler.mode=FAIR --queue spark_app $SPARK_DRIVER_JAR_PATH
   spark_driver:
     container_name: spark_driver
     image: docker.io/dockeralexandrtalan/spark
     volumes:
       - ./projects/SparkApp:/root/spark/app
       - ./hadoop-config:/root/spark/hadoop/config
+      - ./spark-config:/root/spark/spark-3.0.0-bin-hadoop-2.7.4/conf/
     ports:
       - "4040:4040"
+      - "18080:18080"
     environment:
       - HADOOP_CONF_DIR=/root/spark/hadoop/config
       - SPARK_DRIVER_JAR_PATH=/root/spark/app/target/scala-2.12/SparkApp-assembly-0.1.jar
