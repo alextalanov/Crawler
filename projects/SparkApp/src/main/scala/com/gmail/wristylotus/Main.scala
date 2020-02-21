@@ -7,7 +7,7 @@ import org.apache.spark.sql.SparkSession
 object Main extends App {
 
   val conf = new SparkConf().setAppName("CountriesReviewJob")
-  lazy val sc = SparkSession.builder().config(conf).getOrCreate()
+  val sc = SparkSession.builder().config(conf).getOrCreate()
 
   CountriesReviewJob(sparkSession = sc).run(args)
 }
