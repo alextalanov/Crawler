@@ -18,8 +18,11 @@ class CsvFileWriter(
   private val writer = hdfs.create(new HPath(filePath).suffix(fileSuffix))
 
   override def write(content: Content): IO[Unit] = IO {
-    val Content(link, query, body) = content
-    val row = s"""$query,$link,${body.mkString}""".getBytes
+    val Content(link, query, html) = content
+
+    val noCommasHtml = html.mkString.replaceAll(",", "")
+
+    val row = s"""$link,$query,$noCommasHtml\n""".getBytes
 
     writer.write(row)
   }

@@ -36,7 +36,7 @@ object CrawlerApp extends IOApp {
     verify()
   }
 
-  //sbt runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000" -f com/gmail/wristylotus/crawler/data.(csv, parquet)
+  //sbt runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -f /com/gmail/wristylotus/crawler/data.(csv, parquet)
   override def run(args: List[String]): IO[ExitCode] = {
     val conf = new Conf(args)
 
