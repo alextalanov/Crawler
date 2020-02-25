@@ -9,12 +9,14 @@ lazy val base = (project in file("."))
 
 lazy val baseDependencies = Seq(
   //Common
-  "org.apache.spark" %% "spark-sql" % "2.4.4" % "provided",
+  "org.apache.spark" %% "spark-sql" % "2.4.4" % Provided,
   "org.jsoup" % "jsoup" % "1.12.1",
   "org.rogach" %% "scallop" % "3.3.1",
 
   //Test
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.1" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.14.1" % Test,
+  "org.scalamock" %% "scalamock" % "4.4.0" % Test
 )
 
 lazy val baseScalacOptions = Seq(

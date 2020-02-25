@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions._
 
 class CountriesReviewJob(sparkSession: SparkSession) {
 
-  val spark = sparkSession
+  private val spark = sparkSession
 
   import spark.implicits._
 
@@ -26,7 +26,7 @@ class CountriesReviewJob(sparkSession: SparkSession) {
     aggQueryScoreDS.coalesce(1).write.csv(conf.hdfs.output().getPath)
   }
 
-  def evalQueryScore(pagesDS: Dataset[HtmlPage], goodWords: Set[String]) =
+  private[spark] def evalQueryScore(pagesDS: Dataset[HtmlPage], goodWords: Set[String]) =
     pagesDS.map { page =>
       Option(page.body) match {
         case None => page.query -> 0
@@ -42,7 +42,7 @@ class CountriesReviewJob(sparkSession: SparkSession) {
       }
     }
 
-  def aggregateByQuery(queryScoreDS: Dataset[(String, Int)]) =
+  private[spark] def aggregateByQuery(queryScoreDS: Dataset[(String, Int)]) =
     queryScoreDS
       .toDF("query", "score")
       .groupBy($"query")
