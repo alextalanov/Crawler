@@ -8,7 +8,7 @@ import com.gmail.wristylotus.writers.ContentWriter
 
 class ContentExtractor(
                         queries: List[Query],
-                        concurrency: Int = Runtime.getRuntime.availableProcessors()
+                        concurrency: Int
                       )(
                         implicit contextShift: ContextShift[IO]
                       ) {
@@ -25,8 +25,15 @@ class ContentExtractor(
   private def searchWith(query: Query) =
     (Functor[IO] compose Functor[List]).map(search(query))((query, _))
 
-  protected def splitToPartitions(links: List[(Query, Link)]) =
-    links.grouped(links.size / concurrency).toList
+  protected def splitToPartitions(links: List[(Query, Link)]) = {
+    val partitions = links.grouped(links.size / concurrency).toList
+    if (links.size % concurrency != 0) {
+      val rest :: partition :: tail = partitions.reverse
+      (partition ::: rest) :: tail
+    } else {
+      partitions
+    }
+  }
 
   protected def divideBtwWorkers(partitions: List[List[(Query, Link)]], writer: => ContentWriter) =
     partitions.map(extractContent(_, writer))

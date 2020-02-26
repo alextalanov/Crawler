@@ -1,6 +1,8 @@
 ## Command to run Crawler app in sbt shell
 
-runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -f /crawler/output/csv/data.csv
+runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -c 2 -f /crawler/output/csv/data.csv
+
+runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -c 2 -m "parquet" -f /crawler/output/parquet/data.parquet
 
 ## Command to run Spark History Server
 

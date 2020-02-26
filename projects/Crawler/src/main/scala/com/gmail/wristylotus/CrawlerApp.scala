@@ -18,6 +18,7 @@ object CrawlerApp extends IOApp {
   // override implicit def contextShift: ContextShift[IO] = ???
 
   class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
+
     object Engine {
       val Google = "google"
       val Yandex = "yandex"
@@ -33,10 +34,12 @@ object CrawlerApp extends IOApp {
     val query = opt[String](short = 'q', required = true)
     val hdfsAddr = opt[URI](short = 'a', required = true)
     val filePath = opt[Path](short = 'f', required = true)
+    val concurrency = opt[Int](short = 'c', default = Some(Runtime.getRuntime.availableProcessors()))
+
     verify()
   }
 
-  //sbt runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -f /com/gmail/wristylotus/crawler/data.(csv, parquet)
+
   override def run(args: List[String]): IO[ExitCode] = {
     val conf = new Conf(args)
 
@@ -46,10 +49,11 @@ object CrawlerApp extends IOApp {
     }
 
     val queries = queryIO.unsafeRunSync()
+    val concurrency = conf.concurrency()
 
     val contentExtractor = conf.engine.map {
-      case conf.Engine.Google => new ContentExtractor(queries) with GoogleSearch
-      case conf.Engine.Yandex => new ContentExtractor(queries) with YandexSearch
+      case conf.Engine.Google => new ContentExtractor(queries, concurrency) with GoogleSearch
+      case conf.Engine.Yandex => new ContentExtractor(queries, concurrency) with YandexSearch
     }()
 
     def writer = conf.format.map {
