@@ -4,7 +4,8 @@
 		"hadoop.http.staticuser.user": "root"
 	},
 	"hdfs_site": {
-		"dfs.namenode.http-address": "0.0.0.0:9870"
+		"dfs.namenode.http-address": "0.0.0.0:9870",
+		"dfs.blockreport.intervalMsec": "60000"
 	},
 	"yarn_site": {
 		"yarn.resourcemanager.address": "resourcemanager:12010",

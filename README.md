@@ -15,12 +15,12 @@ $SPARK_HOME/bin/spark-submit \
     --master yarn --deploy-mode client \
     --driver-memory 4g \
     --executor-memory 2g \
-    --executor-cores 1 \
+    --executor-cores 2 \
     --num-executors=2 \
     --conf spark.yarn.am.memory=512m \
     --conf spark.scheduler.mode=FAIR \
     --queue spark_app \
     $SPARK_DRIVER_JAR_PATH/CountriesReview-assembly-0.1.jar \
     -a "hdfs://namenode:9000/" \
-    -i "crawler/output/csv/data.csv_*" \
-    -o "spark/output/csv"
+    -i "crawler/output/parquet/data.parquet_*" \
+    -o "spark/output/parquet"

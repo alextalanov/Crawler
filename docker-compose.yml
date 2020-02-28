@@ -25,7 +25,18 @@ services:
       - hadoop
     depends_on:
       - namenode
-
+  datanode2:
+    image: "docker.io/dockeralexandrtalan/hadoop"
+    entrypoint: /bin/bash entrypoint.sh --command "hdfs start datanode" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    volumes:
+      - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
+      - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
+    ports:
+      - "50076:50075"
+    networks:
+      - hadoop
+    depends_on:
+      - namenode
 
   resourcemanager:
     container_name: resourcemanager

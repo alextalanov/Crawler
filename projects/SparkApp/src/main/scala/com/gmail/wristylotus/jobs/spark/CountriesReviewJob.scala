@@ -17,7 +17,7 @@ class CountriesReviewJob(sparkSession: SparkSession) {
 
     val goodReviewWords = spark.sparkContext.broadcast(goodMarkers)
 
-    val htmlPagesDS = readCsvFiles(spark, conf.hdfs.input())
+    val htmlPagesDS = readParquetFiles(spark, conf.hdfs.input())
 
     val queryScoreDS = evalQueryScore(htmlPagesDS, goodReviewWords.value)
 

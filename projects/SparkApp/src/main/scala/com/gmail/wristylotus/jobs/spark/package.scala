@@ -21,6 +21,11 @@ package object spark {
       .as[HtmlPage]
   }
 
+  def readParquetFiles(spark: SparkSession, input: URI): Dataset[HtmlPage] = {
+    import spark.implicits._
+    spark.read.parquet(input.getPath).as[HtmlPage]
+  }
+
   def parseToWords(html: String): List[String] = {
     val sepPattern = "[,!:;.?\\s\\-]"
     val doc = Jsoup.parse(html)
