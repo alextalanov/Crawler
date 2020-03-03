@@ -1,0 +1,11 @@
+{
+	"hbase_site": {
+		"hbase.cluster.distributed": "true",
+		"hbase.rootdir": "hdfs://namenode:9000/hbase",
+		"hbase.local.dir": "$HBASE_HOME/hbase_local",
+		"hbase.zookeeper.quorum": "zookeeper1,zookeeper2,zookeeper3",
+		"hbase.zookeeper.property.clientPort": 2181
+	},
+	"regionservers": ["hbase_region_server_1", "hbase_region_server_2"],
+	"backup_masters": ["hbase_backup_master"]
+}

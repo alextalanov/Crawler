@@ -29,8 +29,6 @@ class ParquetFileWriter(
     .withRowGroupSize(ParquetWriter.DEFAULT_BLOCK_SIZE)
     .withPageSize(ParquetWriter.DEFAULT_PAGE_SIZE)
     .withCompressionCodec(CompressionCodecName.SNAPPY)
-    .withPageSize(65535)
-    .withRowGroupSize(1024)
     .build()
 
 

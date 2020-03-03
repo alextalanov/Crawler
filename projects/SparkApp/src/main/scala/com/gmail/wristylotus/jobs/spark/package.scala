@@ -10,7 +10,6 @@ package object spark {
 
   val goodMarkers = Set("admirable", "adorable", "alluring", "angelic", "appealing", "beauteous", "bewitching", "captivating", "charming", "classy", "comely", "cute", "dazzling", "delicate", "delightful", "divine", "elegant", "enthralling", "enticing", "excellent", "exquisite", "fair", "fascinating", "fetching", "fine", "foxy", "good-looking", "gorgeous", "graceful", "grand", "handsome", "ideal", "inviting", "lovely", "magnetic", "magnificent", "marvelous", "mesmeric", "nice", "pleasing", "pretty", "pulchritudinous", "radiant", "ravishing", "refined", "resplendent", "shapely", "slightly", "splendid", "statuesque", "stunning", "sublime", "superb", "symmetrical", "taking", "tantalizing", "teasing", "tempting", "well-formed", "winning", "wonderful")
 
-  def config(args: Seq[String]) = Configuration(args)
 
   def readCsvFiles(spark: SparkSession, input: URI): Dataset[HtmlPage] = {
     implicit val encoder = Encoders.product[HtmlPage]

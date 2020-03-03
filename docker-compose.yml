@@ -6,6 +6,7 @@ services:
     container_name: namenode
     image: "docker.io/dockeralexandrtalan/hadoop"
     entrypoint: /bin/bash entrypoint.sh --command "hdfs start namenode" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    restart: always
     volumes:
       - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
       - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
@@ -14,8 +15,10 @@ services:
     networks:
       - hadoop
   datanode:
+    container_name: datanode1
     image: "docker.io/dockeralexandrtalan/hadoop"
     entrypoint: /bin/bash entrypoint.sh --command "hdfs start datanode" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    restart: always
     volumes:
       - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
       - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
@@ -26,8 +29,10 @@ services:
     depends_on:
       - namenode
   datanode2:
+    container_name: datanode2
     image: "docker.io/dockeralexandrtalan/hadoop"
     entrypoint: /bin/bash entrypoint.sh --command "hdfs start datanode" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    restart: always
     volumes:
       - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
       - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
@@ -38,10 +43,12 @@ services:
     depends_on:
       - namenode
 
+
   resourcemanager:
     container_name: resourcemanager
     image: "docker.io/dockeralexandrtalan/hadoop"
     entrypoint: /bin/bash entrypoint.sh --command "yarn start resourcemanager" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    restart: always
     volumes:
       - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
       - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
@@ -53,6 +60,7 @@ services:
     container_name: nodemanager1
     image: "docker.io/dockeralexandrtalan/hadoop"
     entrypoint: /bin/bash entrypoint.sh --command "yarn start nodemanager" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    restart: always
     volumes:
       - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
       - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
@@ -66,6 +74,7 @@ services:
     container_name: nodemanager2
     image: "docker.io/dockeralexandrtalan/hadoop"
     entrypoint: /bin/bash entrypoint.sh --command "yarn start nodemanager" --config "/usr/local/lib/hadoop-2.9.2/etc/hadoop/hadoop-config.json"
+    restart: always
     volumes:
       - ./hadoop-config:/usr/local/lib/hadoop-2.9.2/etc/hadoop/
       - ./hadoop-logs:/usr/local/lib/hadoop-2.9.2/logs/
@@ -75,6 +84,100 @@ services:
       - hadoop
     depends_on:
       - resourcemanager
+
+
+  zookeeper1:
+    container_name: zookeeper1
+    entrypoint: /bin/bash run-zookeeper.sh --myid 1
+    image: "docker.io/dockeralexandrtalan/zookeeper"
+    restart: always
+    volumes:
+      - ./zookeeper-config:/usr/local/lib/apache-zookeeper-3.5.6-bin/conf
+    ports:
+      - "2181:2181"
+    networks:
+      - hadoop
+  zookeeper2:
+    container_name: zookeeper2
+    entrypoint: /bin/bash run-zookeeper.sh --myid 2
+    image: "docker.io/dockeralexandrtalan/zookeeper"
+    restart: always
+    volumes:
+      - ./zookeeper-config:/usr/local/lib/apache-zookeeper-3.5.6-bin/conf
+    ports:
+      - "2182:2181"
+    networks:
+      - hadoop
+  zookeeper3:
+    container_name: zookeeper3
+    entrypoint: /bin/bash run-zookeeper.sh --myid 3
+    image: "docker.io/dockeralexandrtalan/zookeeper"
+    restart: always
+    volumes:
+      - ./zookeeper-config:/usr/local/lib/apache-zookeeper-3.5.6-bin/conf
+    ports:
+      - "2183:2181"
+    networks:
+      - hadoop
+
+
+  hbase_master:
+    container_name: hbase_master
+    image: "docker.io/dockeralexandrtalan/hbase"
+    entrypoint: /bin/bash entrypoint.sh --command "master" --config "/root/hbase-2.2.2/conf/hbase-config.json"
+    restart: always
+    volumes:
+      - ./hbase-config:/root/hbase-2.2.2/conf
+      - ./ssh_hbase:/root/.ssh/hbase
+    ports:
+      - "16010:16010"
+    depends_on:
+      - zookeeper1
+      - namenode
+    networks:
+      - hadoop
+  hbase_region_server_1:
+    container_name: hbase_region_server_1
+    image: "docker.io/dockeralexandrtalan/hbase"
+    entrypoint: /bin/bash entrypoint.sh --command "slave" --config "/root/hbase-2.2.2/conf/hbase-config.json"
+    restart: always
+    volumes:
+      - ./hbase-config:/root/hbase-2.2.2/conf
+      - ./ssh_hbase:/root/.ssh/hbase
+    ports:
+      - "16030:16030"
+    depends_on:
+      - hbase_master
+    networks:
+      - hadoop
+  hbase_region_server_2:
+    container_name: hbase_region_server_2
+    image: "docker.io/dockeralexandrtalan/hbase"
+    entrypoint: /bin/bash entrypoint.sh --command "slave" --config "/root/hbase-2.2.2/conf/hbase-config.json"
+    restart: always
+    volumes:
+      - ./hbase-config:/root/hbase-2.2.2/conf
+      - ./ssh_hbase:/root/.ssh/hbase
+    ports:
+      - "16031:16030"
+    depends_on:
+      - hbase_master
+    networks:
+      - hadoop
+  hbase_backup_master:
+    container_name: hbase_backup_master
+    image: "docker.io/dockeralexandrtalan/hbase"
+    entrypoint: /bin/bash entrypoint.sh --command "slave" --config "/root/hbase-2.2.2/conf/hbase-config.json"
+    restart: always
+    volumes:
+      - ./hbase-config:/root/hbase-2.2.2/conf
+      - ./ssh_hbase:/root/.ssh/hbase
+    ports:
+      - "16011:16010"
+    depends_on:
+      - hbase_master
+    networks:
+      - hadoop
 
 
   crawler:
@@ -94,13 +197,13 @@ services:
     volumes:
       - ./projects/SparkApp:/root/spark/app
       - ./hadoop-config:/root/spark/hadoop/config
-      - ./spark-config:/root/spark/spark-3.0.0-bin-hadoop-2.7.4/conf/
+      - ./spark-config:/root/spark/spark-2.4.5-bin-hadoop2.7/conf/
     ports:
       - "4040:4040"
       - "18080:18080"
     environment:
       - HADOOP_CONF_DIR=/root/spark/hadoop/config
-      - SPARK_DRIVER_JAR_PATH=/root/spark/app/target/scala-2.12
+      - SPARK_DRIVER_JAR_PATH=/root/spark/app/target/scala-2.11
     depends_on:
       - resourcemanager
     networks:

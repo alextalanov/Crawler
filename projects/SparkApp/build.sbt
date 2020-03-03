@@ -1,40 +1,49 @@
+import Dependencies.{spark, common, testing}
+
+//Projects
 lazy val base = (project in file("."))
   .settings(
     name := "CountriesReview",
     version := "0.1",
-    scalaVersion := "2.12.10",
-    libraryDependencies ++= baseDependencies,
-    scalacOptions ++= baseScalacOptions
+    scalaVersion := "2.11.12",
+    libraryDependencies ++= spark ++ common ++ testing,
+    scalacOptions ++= baseScalacOptions,
+    clearTask
   )
 
-lazy val baseDependencies = Seq(
-  //Common
-  "org.apache.spark" %% "spark-sql" % "2.4.4" % Provided,
-  "org.jsoup" % "jsoup" % "1.12.1",
-  "org.rogach" %% "scallop" % "3.3.1",
 
-  //Test
-  "org.scalatest" %% "scalatest" % "3.0.1" % Test,
-  "org.scalacheck" %% "scalacheck" % "1.14.1" % Test,
-  "org.scalamock" %% "scalamock" % "4.4.0" % Test
-)
+//Assembly
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", _) => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
 
+mainClass in assembly := Some("com.gmail.wristylotus.Main")
+
+test in assembly := {}
+
+
+//Scala Compiler Options
 lazy val baseScalacOptions = Seq(
   "-deprecation",
   "-encoding", "UTF-8",
   "-feature",
-  "-target:jvm-1.8",
   "-unchecked",
   "-Ywarn-adapted-args",
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",
   "-Ywarn-unused",
   "-Ywarn-value-discard",
+  "-Ypartial-unification",
   "-Xfuture",
   "-Xlint"
 )
 
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", _) => MergeStrategy.discard
-  case _ => MergeStrategy.singleOrError
+
+//Custom tasks
+lazy val clear = taskKey[Unit]("Clear std::out")
+lazy val clearTask = clear := {
+  import scala.language.postfixOps
+  import sys.process._
+  "bash -c clear" !
 }

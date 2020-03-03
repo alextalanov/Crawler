@@ -1,10 +1,11 @@
-package com.gmail.wristylotus.jobs
+package com.gmail.wristylotus.jobs.configuration
 
 import java.net.URI
 
 import org.rogach.scallop.ScallopConf
 
 class Configuration(arguments: Seq[String]) extends ScallopConf(arguments) {
+
   val hdfsAddr = opt[URI](short = 'a', required = true)
   private val in = opt[String](short = 'i', required = true)
   private val out = opt[String](short = 'o', required = true)
