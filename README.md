@@ -4,6 +4,8 @@ runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://nameno
 
 runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -c 2 -m "parquet" -f /crawler/output/parquet/data.parquet
 
+runMain com.gmail.wristylotus.CrawlerApp -q test-dataset.txt -a "hdfs://namenode:9000/" -c 1 -m "kafka"
+
 ## Command to run Spark History Server
 
 $SPARK_HOME/sbin/start-history-server.sh

@@ -13,14 +13,16 @@ lazy val base = (project in file("."))
 
 
 //Assembly
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", _) => MergeStrategy.discard
-  case _ => MergeStrategy.first
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", _*) => MergeStrategy.discard
+  case PathList(xs@_*) if List(".txt", ".html").exists(xs.last.endsWith) => MergeStrategy.discard
+  case PathList("org", "apache", "commons", _*) => MergeStrategy.last
+  case _ => MergeStrategy.deduplicate
 }
 
-mainClass in assembly := Some("com.gmail.wristylotus.Main")
+assembly / mainClass := Some("com.gmail.wristylotus.Main")
 
-test in assembly := {}
+assembly / test := {}
 
 
 //Scala Compiler Options
@@ -29,6 +31,7 @@ lazy val baseScalacOptions = Seq(
   "-encoding", "UTF-8",
   "-feature",
   "-unchecked",
+  "-Xmax-classfile-name", "240",
   "-Ywarn-adapted-args",
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",

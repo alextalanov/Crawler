@@ -1,9 +1,11 @@
 /projects/Crawler/target/
-/projects/Crawler/project/
+/projects/Crawler/project/target/
+/projects/Crawler/project/project/
 /projects/Crawler/.idea/
 
 /projects/SparkApp/target/
-/projects/SparkApp/project/
+/projects/SparkApp/project/target/
+/projects/SparkApp/project/project/
 /projects/SparkApp/.idea/
 
 /hadoop-logs/
@@ -17,3 +19,8 @@
 
 /zookeeper-config/*
 !/zookeeper-config/zoo.cfg
+
+/kafka-config/*
+!/kafka-config/kafka.json
+!/kafka-config/log4j.properties
+!/kafka-config/tools-log4j.properties
