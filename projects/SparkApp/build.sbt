@@ -16,11 +16,10 @@ lazy val base = (project in file("."))
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", _*) => MergeStrategy.discard
   case PathList(xs@_*) if List(".txt", ".html").exists(xs.last.endsWith) => MergeStrategy.discard
+  case PathList("org", "apache", "spark", "unused", _*) => MergeStrategy.discard
   case PathList("org", "apache", "commons", _*) => MergeStrategy.last
   case _ => MergeStrategy.deduplicate
 }
-
-assembly / mainClass := Some("com.gmail.wristylotus.Main")
 
 assembly / test := {}
 

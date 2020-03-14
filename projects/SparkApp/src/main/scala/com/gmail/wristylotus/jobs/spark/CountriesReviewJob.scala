@@ -4,7 +4,7 @@ package com.gmail.wristylotus.jobs.spark
 import com.gmail.wristylotus.jobs.model.HtmlPage
 import org.apache.hadoop.hbase.TableName
 import com.gmail.wristylotus.jobs.configuration
-import com.gmail.wristylotus.jobs.configuration.Configuration
+import com.gmail.wristylotus.jobs.configuration.HDFSConfiguration
 import com.gmail.wristylotus.hbase
 import org.apache.hadoop.hbase.spark.HBaseContext
 import org.apache.spark.rdd.RDD
@@ -12,6 +12,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import com.gmail.wristylotus.hbase.model.{Row => HbaseRow, _}
 import com.gmail.wristylotus.hbase.buildPut
+import org.apache.spark.SparkConf
 
 class CountriesReviewJob(sparkSession: SparkSession) {
 
@@ -28,9 +29,9 @@ class CountriesReviewJob(sparkSession: SparkSession) {
   }
 
 
-  def run(args: Seq[String]): Unit = {
+  def run(args: Array[String]): Unit = {
 
-    val conf = Configuration(args)
+    val conf = HDFSConfiguration(args)
 
     val goodReviewWords = spark.sparkContext.broadcast(goodMarkers)
 
@@ -85,6 +86,14 @@ class CountriesReviewJob(sparkSession: SparkSession) {
 
 }
 
+
 object CountriesReviewJob {
+
+  private lazy val sparkConfig = new SparkConf().setAppName("CountriesReviewJob")
+  private lazy val spark = SparkSession.builder().config(sparkConfig).getOrCreate()
+
+  def main(args: Array[String]): Unit = CountriesReviewJob(sparkSession = spark).run(args)
+
   def apply(sparkSession: SparkSession): CountriesReviewJob = new CountriesReviewJob(sparkSession)
+
 }
