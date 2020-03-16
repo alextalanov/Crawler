@@ -4,6 +4,7 @@ import java.net.URI
 
 import com.gmail.wristylotus.jobs.model.HtmlPage
 import org.apache.spark.sql.{Dataset, Encoders, SparkSession}
+import org.apache.spark.streaming.{Duration, StreamingContext}
 import org.jsoup.Jsoup
 
 package object spark {
@@ -23,6 +24,12 @@ package object spark {
   def readParquetFiles(spark: SparkSession, input: URI): Dataset[HtmlPage] = {
     import spark.implicits._
     spark.read.parquet(input.getPath).as[HtmlPage]
+  }
+
+  def createStreamingContext(batchDuration: Duration, checkpointDir: String)(implicit spark: SparkSession): StreamingContext = {
+    val context = new StreamingContext(spark.sparkContext, batchDuration)
+    context.checkpoint(checkpointDir)
+    context
   }
 
   def parseToWords(html: String): List[String] = {

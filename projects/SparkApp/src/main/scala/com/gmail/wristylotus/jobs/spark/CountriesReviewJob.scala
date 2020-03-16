@@ -41,7 +41,7 @@ class CountriesReviewJob(sparkSession: SparkSession) {
 
     val aggQueryScoreDS = aggregateByQuery(queryScoreDS)
 
-    writeToHbase(aggQueryScoreDS.rdd, TableName.valueOf("Something"))
+    writeToHbase(aggQueryScoreDS.rdd, TableName.valueOf("CountriesReview"))
   }
 
 
