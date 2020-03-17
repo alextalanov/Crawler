@@ -1,3 +1,5 @@
+![Scala CI](https://github.com/alextalanov/Crawler/workflows/Scala%20CI/badge.svg?branch=master&event=push)
+
 ## Command to run Crawler app in sbt shell
 
 docker exec -it crawler bash
