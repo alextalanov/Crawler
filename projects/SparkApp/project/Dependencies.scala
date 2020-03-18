@@ -8,7 +8,9 @@ object Dependencies {
 
   val sparkStreaming = "org.apache.spark" %% "spark-streaming" % sparkVersion % Provided
 
-  val sparkKafkaStreaming = "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion
+  val sparkSqlKafkaStreaming = "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % Provided
+
+  val sparkKafkaStreaming = "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion % Provided
 
   val sparkHBaseConnector = ("org.apache.hbase.connectors.spark" % "hbase-spark" % "1.0.0" % Compile)
     .excludeAll(
@@ -31,7 +33,7 @@ object Dependencies {
 
   val scalamock = "org.scalamock" %% "scalamock" % "4.4.0" % Test
 
-  val spark = Seq(sparkSql, sparkStreaming, sparkHBaseConnector, sparkKafkaStreaming)
+  val spark = Seq(sparkSql, sparkStreaming, sparkHBaseConnector, sparkSqlKafkaStreaming, sparkKafkaStreaming)
 
   val common = Seq(jsoup, scallop)
 

@@ -34,6 +34,7 @@ docker exec -it spark_driver bash
 
 $SPARK_HOME/bin/spark-submit \
     --class com.gmail.wristylotus.jobs.spark.CountriesReviewStreamJob \
+    --packages org.apache.spark:spark-streaming-kafka-0-10_2.11:2.4.0,org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.0 \
     --master yarn --deploy-mode client \
     --driver-memory 4g \
     --executor-memory 2g \
@@ -43,8 +44,7 @@ $SPARK_HOME/bin/spark-submit \
     --conf spark.scheduler.mode=FAIR \
     --queue spark_app \
     $SPARK_DRIVER_JAR_PATH/CountriesReview-assembly-0.1.jar \
-    -d 1 \
-    -i 1 \
-    -c "hdfs://namenode:9000/spark/checkpoint/jobs/CountriesReview" \
+    -d 5 \
+    -c "hdfs://namenode:9000/spark/checkpoint/jobs/CountriesReviewStreamJob" \
     -p "kafka-config.properties"
 

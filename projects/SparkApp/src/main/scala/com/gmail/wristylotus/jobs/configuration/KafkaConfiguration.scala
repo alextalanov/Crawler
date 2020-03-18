@@ -9,9 +9,9 @@ class KafkaConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) 
 
   private val propertiesFile = opt[String](short = 'p', required = true, default = Some("kafka-config.properties"))
 
-  val batchDuration = opt[Long](short = 'd', required = true).map(Seconds(_))
+  val batchDuration = opt[Long](short = 'd', required = true)
   val checkpointDir = opt[String](short = 'c', required = true)
-  val checkpointInterval = opt[Long](short = 'i', required = true).map(Seconds(_))
+  val checkpointInterval = opt[Long](short = 'i', default = Some(5)).map(Seconds(_))
 
   verify()
 
@@ -35,6 +35,9 @@ class KafkaConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) 
       properties.entrySet().asScala
         .map(entry => entry.getKey.asInstanceOf[String] -> entry.getValue)
         .toMap
+
+    def apply[T](key: String): T = asMap(key).asInstanceOf[T]
+
   }
 
 }

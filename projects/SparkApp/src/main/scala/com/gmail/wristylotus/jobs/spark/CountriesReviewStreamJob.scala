@@ -11,7 +11,7 @@ import org.apache.hadoop.hbase.spark.HBaseContext
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.streaming.StreamingContext
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.KafkaUtils
@@ -39,7 +39,9 @@ class CountriesReviewStreamJob(sparkSession: SparkSession) {
     val config = KafkaConfiguration(args)
 
     val checkpoint = config.checkpointDir()
-    val sparkStreaming = StreamingContext.getOrCreate(checkpoint, () => createStreamingContext(config.batchDuration(), checkpoint))
+    val durationSec = config.batchDuration.map(Seconds(_))
+
+    val sparkStreaming = StreamingContext.getOrCreate(checkpoint, () => createStreamingContext(durationSec(), checkpoint))
 
     val stream: InputDStream[ConsumerRecord[String, HtmlPage]] = KafkaUtils.createDirectStream(
       sparkStreaming,
