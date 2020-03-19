@@ -4,7 +4,7 @@ import java.net.URI
 
 import org.rogach.scallop.ScallopConf
 
-class HDFSConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) {
+class SparkJobConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) {
 
   val hdfsAddr = opt[URI](short = 'a', required = true)
   private val in = opt[String](short = 'i', required = true)
@@ -18,6 +18,6 @@ class HDFSConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) {
   }
 }
 
-object HDFSConfiguration {
-  def apply(arguments: Seq[String]): HDFSConfiguration = new HDFSConfiguration(arguments)
+object SparkJobConfiguration {
+  def apply(arguments: Seq[String]): SparkJobConfiguration = new SparkJobConfiguration(arguments)
 }

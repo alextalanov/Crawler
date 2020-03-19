@@ -1,6 +1,6 @@
 package com.gmail.wristylotus.jobs.spark
 
-import com.gmail.wristylotus.jobs.configuration.KafkaConfiguration
+import com.gmail.wristylotus.jobs.configuration.SparkStreamingConfiguration
 import com.gmail.wristylotus.jobs.model.HtmlPage
 import com.gmail.wristylotus.kafka.SearchContentDeserializer
 import org.apache.spark.SparkConf
@@ -17,7 +17,7 @@ class CountriesReviewSqlStreamJob(sparkSession: SparkSession) {
 
   def run(args: Seq[String]): Unit = {
 
-    val config = KafkaConfiguration(args)
+    val config = SparkStreamingConfiguration(args)
 
     val stream = prepareKafkaStream(spark.readStream, config).load()
 
@@ -48,7 +48,7 @@ class CountriesReviewSqlStreamJob(sparkSession: SparkSession) {
     countriesReviewQuery.awaitTermination()
   }
 
-  private def prepareKafkaStream(stream: DataStreamReader, config: KafkaConfiguration): DataStreamReader =
+  private def prepareKafkaStream(stream: DataStreamReader, config: SparkStreamingConfiguration): DataStreamReader =
     stream
       .format("kafka")
       .option("subscribe", config.kafka[String](key = "topics"))

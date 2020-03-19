@@ -48,3 +48,21 @@ $SPARK_HOME/bin/spark-submit \
     -c "hdfs://namenode:9000/spark/checkpoint/jobs/CountriesReviewStreamJob" \
     -p "kafka-config.properties"
 
+## Command to run Kafka Stream Job
+
+docker exec -it spark_driver bash
+
+cd app/
+
+sbt
+
+runMain com.gmail.wristylotus.jobs.kafka.CountriesReviewStreamJob -p "kafka-config.properties"
+
+bin/kafka-console-consumer.sh \
+      --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic countries-review \
+      --from-beginning --formatter kafka.tools.DefaultMessageFormatter \
+      --property print.key=true --property print.value=true \
+      --property key.deserialzer=org.apache.kafka.common.serialization.StringDeserializer \
+      --property value.deserializer=org.apache.kafka.common.serialization.IntegerDeserializer \
+      --from-beginning
+

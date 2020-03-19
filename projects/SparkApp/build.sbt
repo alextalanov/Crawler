@@ -18,6 +18,7 @@ assembly / assemblyMergeStrategy := {
   case PathList(xs@_*) if List(".txt", ".html").exists(xs.last.endsWith) => MergeStrategy.discard
   case PathList("org", "apache", "spark", "unused", _*) => MergeStrategy.discard
   case PathList("org", "apache", "commons", _*) => MergeStrategy.last
+  case PathList("org", "slf4j", "impl", _*) => MergeStrategy.last
   case _ => MergeStrategy.deduplicate
 }
 

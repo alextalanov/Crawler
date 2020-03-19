@@ -4,7 +4,7 @@ import com.gmail.wristylotus.hbase
 import com.gmail.wristylotus.hbase.buildPut
 import com.gmail.wristylotus.hbase.model.{Row => HbaseRow, _}
 import com.gmail.wristylotus.jobs.configuration
-import com.gmail.wristylotus.jobs.configuration.KafkaConfiguration
+import com.gmail.wristylotus.jobs.configuration.SparkStreamingConfiguration
 import com.gmail.wristylotus.jobs.model.HtmlPage
 import org.apache.hadoop.hbase.TableName
 import org.apache.hadoop.hbase.spark.HBaseContext
@@ -36,7 +36,7 @@ class CountriesReviewStreamJob(sparkSession: SparkSession) {
 
   def run(args: Array[String]): Unit = {
 
-    val config = KafkaConfiguration(args)
+    val config = SparkStreamingConfiguration(args)
 
     val checkpoint = config.checkpointDir()
     val durationSec = config.batchDuration.map(Seconds(_))

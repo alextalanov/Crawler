@@ -5,7 +5,7 @@ import java.util.Properties
 import org.apache.spark.streaming.Seconds
 import org.rogach.scallop.ScallopConf
 
-class KafkaConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) {
+class SparkStreamingConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) {
 
   private val propertiesFile = opt[String](short = 'p', required = true, default = Some("kafka-config.properties"))
 
@@ -42,6 +42,6 @@ class KafkaConfiguration(arguments: Seq[String]) extends ScallopConf(arguments) 
 
 }
 
-object KafkaConfiguration {
-  def apply(arguments: Seq[String]): KafkaConfiguration = new KafkaConfiguration(arguments)
+object SparkStreamingConfiguration {
+  def apply(arguments: Seq[String]): SparkStreamingConfiguration = new SparkStreamingConfiguration(arguments)
 }
