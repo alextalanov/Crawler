@@ -1,5 +1,38 @@
 ![Scala CI](https://github.com/alextalanov/Crawler/workflows/Scala%20CI/badge.svg?branch=master&event=push)
 
+## Create input topic
+
+docker exec -it crawler bash
+
+cd kafka_2.12-2.4.0/
+
+bin/kafka-topics.sh --create \
+    --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 \
+    --replication-factor 1 \
+    --partitions 1 \
+    --topic countries
+
+## Create output topic
+
+docker exec -it crawler bash
+
+cd kafka_2.12-2.4.0/
+
+bin/kafka-topics.sh --create \
+    --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 \
+    --replication-factor 1 \
+    --partitions 1 \
+    --topic countries-review \
+    --config cleanup.policy=compact
+
+## Check created topics
+
+docker exec -it crawler bash
+
+cd kafka_2.12-2.4.0/
+
+bin/kafka-topics.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --describe
+
 ## Command to run Crawler app in sbt shell
 
 docker exec -it crawler bash
