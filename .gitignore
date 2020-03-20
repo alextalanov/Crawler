@@ -8,6 +8,11 @@
 /projects/SparkApp/project/project/
 /projects/SparkApp/.idea/
 
+/projects/PySparkApp/.idea/
+/projects/PySparkApp/Pipfile.lock
+/projects/PySparkApp/PySparkApp.iml
+/projects/PySparkApp/jobs.zip
+
 /hadoop-logs/
 /hadoop-config/*
 !/hadoop-config/hadoop-config.json
