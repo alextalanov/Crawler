@@ -1,5 +1,10 @@
 {
   "counties_review": {
-    "in_topic": "countries_review"
+    "countries.coords": "src/resources/countries_and_coordinates.csv",
+    "topic": "countries-review",
+    "auto.offset.reset": "earliest",
+    "bootstrap.servers": "kafka1:9092,kafka2:9092,kafka3:9092",
+    "checkpoint.location": "hdfs://namenode:9000/spark/jobs/CountriesClusteringJob/checkpoint",
+    "batch.duration": "3 seconds"
   }
 }

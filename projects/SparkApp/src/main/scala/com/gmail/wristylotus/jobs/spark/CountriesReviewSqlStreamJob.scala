@@ -38,9 +38,13 @@ class CountriesReviewSqlStreamJob(sparkSession: SparkSession) {
 
     val queryScoreDF = evalQueryScore(spark)
 
-    val countriesReviewQuery = queryScoreDF.writeStream
+    val countriesReviewQuery = queryScoreDF
+      .selectExpr("CAST(query as STRING) as key", "CAST(score as STRING) as value")
+      .writeStream
       .outputMode("update")
-      .format("console")
+      .format("kafka")
+      .option("topic", config.kafka[String](key = "outputTopic"))
+      .option("kafka.bootstrap.servers", config.kafka[String](key = "bootstrap.servers"))
       .option("checkpointLocation", config.checkpointDir())
       .trigger(ProcessingTime(config.batchDuration().seconds))
       .start()
@@ -59,7 +63,9 @@ class CountriesReviewSqlStreamJob(sparkSession: SparkSession) {
     htmlPageDs.flatMap { page =>
       Option(page.body) match {
         case None => Seq.empty
-        case Some(body) => parseToWords(body).map(page.query -> _)
+        case Some(body) =>
+          val country = page.query.replace("travel in", "").trim
+          parseToWords(body).map(country -> _)
       }
     }
 

@@ -2,7 +2,7 @@
 
 ## Create input topic
 
-docker exec -it crawler bash
+docker exec -it kafka1 bash
 
 cd kafka_2.12-2.4.0/
 
@@ -14,7 +14,7 @@ bin/kafka-topics.sh --create \
 
 ## Create output topic
 
-docker exec -it crawler bash
+docker exec -it kafka1 bash
 
 cd kafka_2.12-2.4.0/
 
@@ -27,7 +27,7 @@ bin/kafka-topics.sh --create \
 
 ## Check created topics
 
-docker exec -it crawler bash
+docker exec -it kafka1 bash
 
 cd kafka_2.12-2.4.0/
 
@@ -66,7 +66,7 @@ create "CountriesReview", "A"
 docker exec -it spark_driver bash
 
 $SPARK_HOME/bin/spark-submit \
-    --class com.gmail.wristylotus.jobs.spark.CountriesReviewStreamJob \
+    --class com.gmail.wristylotus.jobs.spark.CountriesReviewSqlStreamJob \
     --packages org.apache.spark:spark-streaming-kafka-0-10_2.11:2.4.0,org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.0 \
     --master yarn --deploy-mode client \
     --driver-memory 4g \
@@ -78,7 +78,7 @@ $SPARK_HOME/bin/spark-submit \
     --queue spark_app \
     $SPARK_DRIVER_JAR_PATH/CountriesReview-assembly-0.1.jar \
     -d 5 \
-    -c "hdfs://namenode:9000/spark/checkpoint/jobs/CountriesReviewStreamJob" \
+    -c "hdfs://namenode:9000/spark/jobs/CountriesReviewSqlStreamJob/checkpoint" \
     -p "kafka-config.properties"
 
 ## Command to run Kafka Stream Job
@@ -98,4 +98,17 @@ bin/kafka-console-consumer.sh \
       --property key.deserialzer=org.apache.kafka.common.serialization.StringDeserializer \
       --property value.deserializer=org.apache.kafka.common.serialization.IntegerDeserializer \
       --from-beginning
+
+## Command to run PySpark Job
+
+docker exec -it py_spark_driver bash
+
+cd app/
+
+If it first time run:
+  make init
+
+source `pipenv --venv`/bin/activate
+
+make run JOB_NAME=counties_review CONFIG_PATH="$(pwd)/src/resources/default_config.json"
 

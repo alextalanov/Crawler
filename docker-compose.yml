@@ -247,5 +247,22 @@ services:
     networks:
       - hadoop
 
+  py_spark_driver:
+    container_name: py_spark_driver
+    image: docker.io/dockeralexandrtalan/spark
+    volumes:
+      - ./projects/PySparkApp:/root/spark/app
+      - ./hadoop-config:/root/spark/hadoop/config
+      - ./spark-config:/root/spark/spark-2.4.5-bin-hadoop2.7/conf/
+    ports:
+      - "4041:4040"
+      - "18081:18080"
+    environment:
+      - HADOOP_CONF_DIR=/root/spark/hadoop/config
+    depends_on:
+      - resourcemanager
+    networks:
+      - hadoop
+
 networks:
   hadoop:
