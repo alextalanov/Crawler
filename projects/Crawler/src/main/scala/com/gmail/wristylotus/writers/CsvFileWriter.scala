@@ -10,12 +10,12 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path => HPath}
 
 class CsvFileWriter(
-                     hdfs: FileSystem,
+                     dfs: FileSystem,
                      val filePath: String,
                      val fileSuffix: String = s"_${UUID.randomUUID().toString}"
                    ) extends ContentWriter {
 
-  private val writer = hdfs.create(new HPath(filePath).suffix(fileSuffix))
+  private val writer = dfs.create(new HPath(filePath).suffix(fileSuffix))
 
   override def write(content: Content): IO[Unit] = IO {
     val Content(link, query, html) = content
@@ -33,11 +33,23 @@ class CsvFileWriter(
 
 object CsvFileWriter {
 
-  def apply(hdfs: FileSystem, filePath: Path): CsvFileWriter = new CsvFileWriter(hdfs, filePath.toString)
+  def apply(
+             dfsConfig: Configuration,
+             filePath: Path,
+             versioned: Boolean = false
+           ): CsvFileWriter =
+    if (versioned) {
+      new CsvFileWriter(FileSystem.get(dfsConfig), filePath.toString, fileSuffix = "")
+    } else {
+      new CsvFileWriter(FileSystem.get(dfsConfig), filePath.toString)
+    }
 
-  def apply(hdfsUri: URI, filePath: Path): CsvFileWriter = new CsvFileWriter(
-    hdfs = FileSystem.get(hdfsUri, new Configuration()),
-    filePath = filePath.toString
-  )
 
+  def apply(dfsUri: URI, filePath: Path): CsvFileWriter =
+    apply(
+      filePath = filePath,
+      dfsConfig = new Configuration() {
+        set(FileSystem.FS_DEFAULT_NAME_KEY, dfsUri.toString)
+      }
+    )
 }

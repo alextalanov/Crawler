@@ -1,6 +1,5 @@
 package com.gmail.wristylotus
 
-import java.net.URI
 import java.nio.file.{Path, Paths}
 import java.util.Properties
 
@@ -8,6 +7,7 @@ import cats.effect.{ExitCode, IO, IOApp, Resource}
 import com.gmail.wristylotus.search.{GoogleSearch, YandexSearch}
 import com.gmail.wristylotus.writers.kafka.KafkaWriter
 import com.gmail.wristylotus.writers.{CsvFileWriter, ParquetFileWriter}
+import org.apache.hadoop.conf.Configuration
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 
@@ -35,10 +35,15 @@ object CrawlerApp extends IOApp {
     val engine = opt[String](short = 'e', default = Some(Engine.Google)).map(_.toLowerCase)
     val format = opt[String](short = 'm', default = Some(ExtractFormat.Csv).map(_.toLowerCase))
     val query = opt[String](short = 'q', required = true)
-    val hdfsAddr = opt[URI](short = 'a')
     val filePath = opt[Path](short = 'f')
+    val versioned = opt[Boolean](short = 'v', default = Some(false))
     val concurrency = opt[Int](short = 'c', default = Some(Runtime.getRuntime.availableProcessors()))
     val kafkaConfig = opt[String](short = 'k', default = Some("/kafka-config.properties"))
+    val dfsConfig = opt[String](short = 'd', default = Some("/dfs-config.xml")).map { path =>
+      val conf = new Configuration()
+      conf.addResource(getClass.getResourceAsStream(path))
+      conf
+    }
 
     verify()
   }
@@ -61,8 +66,8 @@ object CrawlerApp extends IOApp {
     }()
 
     def writer = conf.format.map {
-      case conf.ExtractFormat.Csv => CsvFileWriter(conf.hdfsAddr(), conf.filePath())
-      case conf.ExtractFormat.Parquet => ParquetFileWriter(conf.hdfsAddr(), conf.filePath())
+      case conf.ExtractFormat.Csv => CsvFileWriter(conf.dfsConfig(), conf.filePath(), conf.versioned())
+      case conf.ExtractFormat.Parquet => ParquetFileWriter(conf.dfsConfig(), conf.filePath(), conf.versioned())
       case conf.ExtractFormat.Kafka => KafkaWriter {
         new Properties() {
           load(getClass.getResourceAsStream(conf.kafkaConfig()))

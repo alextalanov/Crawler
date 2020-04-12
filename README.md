@@ -41,9 +41,9 @@ cd ../crawler
 
 sbt
 
-runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -c 2 -f /crawler/output/csv/data.csv
+runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -c 2 -f /output/csv/data.csv -v
 
-runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -a "hdfs://namenode:9000/" -c 2 -m "parquet" -f /crawler/output/parquet/data.parquet
+runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -c 2 -m "parquet" -f /output/parquet/data.parquet -v
 
 runMain com.gmail.wristylotus.CrawlerApp -q travel-dataset.txt -c 1 -m "kafka"
 

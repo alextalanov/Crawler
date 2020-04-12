@@ -21,8 +21,9 @@ libraryDependencies ++= Seq(
   "org.rogach" %% "scallop" % "3.3.1",
   "org.jsoup" % "jsoup" % "1.12.1",
   "org.apache.parquet" % "parquet-avro" % "1.11.0",
-  "org.apache.hadoop" % "hadoop-hdfs" % hadoopVersion,
   "org.apache.hadoop" % "hadoop-common" % hadoopVersion,
+  "org.apache.hadoop" % "hadoop-hdfs" % hadoopVersion,
+  "org.apache.hadoop" % "hadoop-aws" % hadoopVersion,
   "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion
 )
 

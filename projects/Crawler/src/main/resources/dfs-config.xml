@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>s3a://crawlercountryreview</value>
+    </property>
+    <property>
+        <name>fs.s3a.aws.credentials.provider</name>
+        <value>org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider</value>
+    </property>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>AKIAXVCMOWKJAF3RDAXH</value>
+    </property>
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>VcKljJ7136fxBItwnyk9tKWDiANfyBYUTOod7gK/</value>
+    </property>
+    <property>
+        <name>fs.s3a.change.detection.version.required</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>fs.s3a.fast.upload.buffer</name>
+        <value>array</value>
+    </property>
+</configuration>

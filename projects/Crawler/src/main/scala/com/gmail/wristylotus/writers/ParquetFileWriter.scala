@@ -14,7 +14,7 @@ import org.apache.parquet.hadoop.ParquetWriter
 import org.apache.parquet.hadoop.metadata.CompressionCodecName
 
 class ParquetFileWriter(
-                         val hdfsConfig: Configuration,
+                         val dfsConfig: Configuration,
                          val filePath: String,
                          val fileSuffix: String = s"_${UUID.randomUUID().toString}"
                        ) extends ContentWriter {
@@ -25,7 +25,7 @@ class ParquetFileWriter(
 
   private val writer = AvroParquetWriter.builder[AvroContent](file)
     .withSchema(schema)
-    .withConf(hdfsConfig)
+    .withConf(dfsConfig)
     .withRowGroupSize(ParquetWriter.DEFAULT_BLOCK_SIZE)
     .withPageSize(ParquetWriter.DEFAULT_PAGE_SIZE)
     .withCompressionCodec(CompressionCodecName.SNAPPY)
@@ -49,13 +49,23 @@ class ParquetFileWriter(
 
 object ParquetFileWriter {
 
-  def apply(hdfsConfig: Configuration, filePath: Path): ParquetFileWriter = new ParquetFileWriter(hdfsConfig, filePath.toString)
+  def apply(
+             dfsConfig: Configuration,
+             filePath: Path,
+             versioned: Boolean = false
+           ): ParquetFileWriter =
+    if (versioned) {
+      new ParquetFileWriter(dfsConfig, filePath.toString, fileSuffix = "")
+    } else {
+      new ParquetFileWriter(dfsConfig, filePath.toString)
+    }
 
-  def apply(hdfsUri: URI, filePath: Path): ParquetFileWriter = new ParquetFileWriter(
-    hdfsConfig = new Configuration() {
-      set(FileSystem.FS_DEFAULT_NAME_KEY, hdfsUri.toString)
-    },
-    filePath = filePath.toString
-  )
+  def apply(dfsUri: URI, filePath: Path): ParquetFileWriter =
+    apply(
+      filePath = filePath,
+      dfsConfig = new Configuration() {
+        set(FileSystem.FS_DEFAULT_NAME_KEY, dfsUri.toString)
+      }
+    )
 
 }
