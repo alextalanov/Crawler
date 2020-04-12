@@ -35,7 +35,7 @@ bin/kafka-topics.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --des
 
 ## Command to run Crawler app in sbt shell
 
-docker exec -it crawler bash
+docker container attach crawler
 
 cd ../crawler
 
