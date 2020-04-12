@@ -7,6 +7,10 @@
     </property>
     <property>
         <name>fs.s3a.aws.credentials.provider</name>
+        <value>com.amazonaws.auth.InstanceProfileCredentialsProvider</value>
+    </property>
+<!--    <property>
+        <name>fs.s3a.aws.credentials.provider</name>
         <value>org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider</value>
     </property>
     <property>
@@ -16,7 +20,7 @@
     <property>
         <name>fs.s3a.secret.key</name>
         <value>VcKljJ7136fxBItwnyk9tKWDiANfyBYUTOod7gK/</value>
-    </property>
+    </property>-->
     <property>
         <name>fs.s3a.change.detection.version.required</name>
         <value>true</value>
